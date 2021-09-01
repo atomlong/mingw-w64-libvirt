@@ -12,7 +12,7 @@ license=('LGPL')
 depends=('mingw-w64-crt' 'mingw-w64-gnutls' 'mingw-w64-libgpg-error' 'mingw-w64-libgcrypt'
          'mingw-w64-gettext' 'mingw-w64-libxml2' 'mingw-w64-portablexdr' 'mingw-w64-libssh2'
          'mingw-w64-curl')
-makedepends=('mingw-w64-configure' 'gettext' 'libxslt' 'python' 'perl')
+makedepends=('mingw-w64-meson' 'mingw-w64-glib2' 'gettext' 'libxslt' 'python' 'perl' 'rpcsvc-proto' 'python-docutils')
 options=('!strip' 'staticlibs' '!buildflags')
 validpgpkeys=('C74415BA7C9C7F78F02E1DC34606B8A5DE95BC1F')
 source=("https://libvirt.org/sources/libvirt-${pkgver}.tar.xz"{,.asc})
@@ -25,8 +25,25 @@ build() {
 
   for _arch in ${_architectures}; do
     mkdir -p build-${_arch} && pushd build-${_arch}
-    ${_arch}-configure
-    make
+    ${_arch}-meson \
+	--buildtype=plain \
+    -Drpath=disabled \
+    -Ddriver_qemu=disabled \
+    -Ddriver_openvz=disabled \
+    -Ddriver_lxc=disabled \
+    -Ddriver_vbox=disabled \
+    -Ddriver_libvirtd=disabled \
+    -Ddriver_esx=disabled \
+    -Ddriver_hyperv=disabled \
+    -Ddriver_vmware=disabled \
+    -Dsasl=disabled \
+    -Dpolkit=disabled \
+    -Dnetcf=disabled \
+    -Daudit=disabled \
+    -Ddtrace=disabled \
+    -Dtests=disabled \
+    -Dexpensive_tests=disabled
+    ninja
     popd
   done
 }
@@ -34,7 +51,7 @@ build() {
 package() {
   for _arch in ${_architectures}; do
     cd "${srcdir}/libvirt-${pkgver}/build-${_arch}"
-    make DESTDIR="${pkgdir}" install
+    DESTDIR="${pkgdir}" meson install
     find "${pkgdir}/usr/${_arch}" -name '*.exe' | xargs -rtl1 ${_arch}-strip
     find "${pkgdir}/usr/${_arch}" -name '*.dll' | xargs -rtl1 ${_arch}-strip -x
     find "${pkgdir}/usr/${_arch}" -name '*.a' -o -name '*.dll' | xargs -rtl1 ${_arch}-strip -g
