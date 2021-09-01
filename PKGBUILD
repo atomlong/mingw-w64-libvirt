@@ -3,8 +3,8 @@
 _architectures="i686-w64-mingw32 x86_64-w64-mingw32"
 
 pkgname=mingw-w64-libvirt
-pkgver=4.7.0
-pkgrel=2
+pkgver=7.6.0
+pkgrel=1
 pkgdesc="API for controlling virtualization engines (remote only for windows)"
 arch=('any')
 url="https://libvirt.org/"
@@ -17,7 +17,7 @@ options=('!strip' 'staticlibs' '!buildflags')
 validpgpkeys=('C74415BA7C9C7F78F02E1DC34606B8A5DE95BC1F')
 source=("https://libvirt.org/sources/libvirt-${pkgver}.tar.xz"{,.asc})
 
-sha256sums=('92c279f7321624ac5a37a81f8bbe8c8d2a16781da04c63c99c92d3de035767e4'
+sha256sums=('8f967106d00aabb3cd692724bdd4a9c09e71cb2245053b98193690ee01766141'
             'SKIP')
 
 build() {
